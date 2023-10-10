@@ -17,5 +17,16 @@ jobs:
       run: pip install -r requirements.txt
     - name: Entrenar modelo de Machine Learning
       run: python model/train.py
+    - name: Construir Imagen de Docker
+      run: docker build -t ${{DOCKER_USER}}/${{MODEL_NAME}} .
+    - name: Docker Login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+          
+    - name: Docker Push
+      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.sha}}
       
 
